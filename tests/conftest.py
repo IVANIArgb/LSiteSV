@@ -11,7 +11,8 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-# Переменные окружения для тестов (до импорта backend)
+# Плагины conftest (фикстуры контента)
+pytest_plugins = ["tests.conftest_content"]
 os.environ.setdefault("SECRET_KEY", "test-secret-key-for-pytest")
 os.environ.setdefault("FLASK_ENV", "testing")
 os.environ["TEST_MODE"] = "false"  # чтобы 401-тесты работали
@@ -56,6 +57,7 @@ def app_config():
             "main-pg", "all-categories-pg", "all-courses-pg", "all-lessons-pg",
             "lessons-content-pg", "questions-pg", "users-info-pg", "bin-pg",
             "terminal-pg",
+            "logs-pg",
         ],
         "ADMIN_TEMPLATE_DIR": "frontend/admin-pages",
         "USER_TEMPLATE_DIR": "frontend/user-pages",

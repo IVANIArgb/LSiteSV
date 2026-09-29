@@ -1,0 +1,393 @@
+.logs-dashboard {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.logs-subtitle {
+  margin: -0.5rem 0 1.25rem;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.logs-subtitle.logs-status--error {
+  color: #b91c1c;
+}
+
+.logs-filters-panel {
+  margin-bottom: 1rem;
+  padding: 1rem 1.25rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.logs-filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.logs-sort-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.logs-sort-label .filter-select {
+  min-width: 150px;
+}
+
+.logs-search-input {
+  min-width: 200px;
+  flex: 1 1 220px;
+}
+
+.logs-auto-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  color: #475569;
+  white-space: nowrap;
+}
+
+.logs-tags-fieldset {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  background: #fff;
+}
+
+.logs-tags-fieldset legend {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+  padding: 0 0.35rem;
+}
+
+.logs-checkbox-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.logs-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 0.82rem;
+  color: #475569;
+  cursor: pointer;
+  user-select: none;
+}
+
+.logs-filter-chip:has(input:checked) {
+  border-color: #94a3b8;
+  background: #e2e8f0;
+}
+
+.logs-filter-chip code {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.8rem;
+  color: #1e293b;
+}
+
+.logs-filter-count {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  min-width: 1.2rem;
+  text-align: right;
+}
+
+.logs-filter-empty {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.logs-filter-chip input[type="checkbox"] {
+  accent-color: #455a64;
+  margin: 0;
+}
+
+.logs-clear-btn {
+  margin-top: 0.65rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #475569;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.logs-clear-btn:hover {
+  background: #f1f5f9;
+}
+
+/* --- PyCharm Darcula console --- */
+.logs-console-section {
+  background: #2b2b2b;
+  border-radius: 6px;
+  border: 1px solid #323232;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.logs-console-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.85rem;
+  background: #3c3f41;
+  color: #a9b7c6;
+  font-size: 0.8rem;
+  border-bottom: 1px solid #515658;
+  user-select: none;
+}
+
+.logs-pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logs-page-btn {
+  padding: 0.3rem 0.65rem;
+  border-radius: 4px;
+  border: 1px solid #515658;
+  background: #45494a;
+  color: #bbbbbb;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.logs-page-btn:hover:not(:disabled) {
+  background: #5c6163;
+}
+
+.logs-page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.logs-console {
+  margin: 0;
+  padding: 6px 8px 10px;
+  max-height: min(75vh, 780px);
+  overflow: auto;
+  font-family: "JetBrains Mono", "Consolas", "Courier New", ui-monospace, monospace;
+  font-size: 12.5px;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: 0;
+  background: #2b2b2b;
+  color: #a9b7c6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  tab-size: 4;
+  cursor: text;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* Выделение текста как в PyCharm Darcula */
+.logs-console ::selection,
+.logs-console *::selection {
+  background: #214283;
+  color: #ffffff;
+}
+
+.logs-console ::-moz-selection,
+.logs-console *::-moz-selection {
+  background: #214283;
+  color: #ffffff;
+}
+
+.log-line {
+  display: block;
+  padding: 0 4px;
+  margin: 0 -4px;
+  border-radius: 0;
+}
+
+.log-line:hover {
+  background: #313335;
+}
+
+.log-line--main {
+  margin-top: 1px;
+}
+
+/* Токены — цвета JetBrains Darcula */
+.tok-bracket,
+.tok-sep,
+.tok-pipe,
+.tok-dash {
+  color: #a9b7c6;
+}
+
+.tok-level {
+  font-weight: 700;
+}
+
+.tok-level-CRITICAL,
+.tok-level-ERROR,
+.log-level-CRITICAL .tok-message,
+.log-level-ERROR .tok-message {
+  color: #ff6b68;
+}
+
+.tok-level-WARNING,
+.tok-level-WARN,
+.log-level-WARNING .tok-message,
+.log-level-WARN .tok-message {
+  color: #bbb529;
+}
+
+.tok-level-INFO,
+.log-level-INFO .tok-message {
+  color: #6a8759;
+}
+
+.tok-level-DEBUG,
+.log-level-DEBUG .tok-message {
+  color: #808080;
+}
+
+.tok-category {
+  font-weight: 600;
+}
+
+.tok-cat-CRITICAL {
+  color: #ff6b68;
+}
+
+.tok-cat-ERROR {
+  color: #ff6b68;
+}
+
+.tok-cat-BUG {
+  color: #cc7832;
+}
+
+.tok-cat-WARN {
+  color: #bbb529;
+}
+
+.tok-cat-ATTEMPT {
+  color: #6897bb;
+}
+
+.tok-cat-INFO {
+  color: #6a8759;
+}
+
+.tok-time {
+  color: #6897bb;
+}
+
+.tok-logger {
+  color: #9876aa;
+  font-style: normal;
+}
+
+.tok-message {
+  color: #a9b7c6;
+}
+
+/* Продолжение записи (traceback, stack) */
+.log-line--cont {
+  color: #808080;
+}
+
+.tok-traceback {
+  color: #cc7832;
+  font-style: italic;
+}
+
+.tok-string {
+  color: #6a8759;
+}
+
+.tok-line-no {
+  color: #6897bb;
+}
+
+.tok-caret {
+  color: #ff6b68;
+  font-weight: 700;
+}
+
+.tok-exception {
+  color: #ff6b68;
+  font-weight: 600;
+}
+
+.tok-stack {
+  color: #a9b7c6;
+}
+
+.tok-cont {
+  color: #808080;
+}
+
+/* Поиск — как Find highlight в IDE, не ломает selection */
+.logs-console mark.hl-search {
+  background: #32593d;
+  color: #a9b7c6;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: inset 0 -2px 0 #6a8759;
+}
+
+.logs-console mark.hl-search::selection {
+  background: #214283;
+  color: #ffffff;
+}
+
+.logs-empty {
+  display: block;
+  padding: 2rem 0;
+  text-align: center;
+  color: #808080;
+  font-style: italic;
+}
+
+.logs-console::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+.logs-console::-webkit-scrollbar-track {
+  background: #2b2b2b;
+}
+
+.logs-console::-webkit-scrollbar-thumb {
+  background: #4e5254;
+  border: 3px solid #2b2b2b;
+  border-radius: 7px;
+}
+
+.logs-console::-webkit-scrollbar-thumb:hover {
+  background: #5c6163;
+}
+
+.logs-console::-webkit-scrollbar-corner {
+  background: #2b2b2b;
+}
+
+

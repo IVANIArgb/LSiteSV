@@ -15,7 +15,6 @@ venv/
 # Logs & uploads
 backend/logs/
 backend/uploads/
-backend/users_courses.db
 
 # Database files (do not commit)
 database/*.db
@@ -33,50 +32,38 @@ Thumbs.db
 .env
 .env.*
 !.env.example
-!docker.env.example
-!docker.env.sso.example
 !env.example
-!env.development.example
-scripts/sync/sync.env
-scripts/sync/sync-smb.env
-
-# Docker export / образы (не в git)
-docker_export/
-
-# Медиа / загрузки
-LNSVImage/
-backend/uploads/
-categories-data/
-
-# Python venv
-.venv/
 
 # Cursor / IDE
 .cursor/
 
-# Kerberos: keytab не коммитить
-kerberos/http.keytab
-kerberos/*.keytab
-kerberos_ad_service/secrets/*.keytab
-kerberos_ad_service/users.db
-
-# Node (just in case)
+# Node
 node_modules/
 
-# Отчёты тестов (папка tests/reports/ создаётся с .gitkeep)
+# Runtime (PID сервера, локальный кэш)
+runtime/*.pid
+runtime/*.log
+runtime/ad-cache/*.json
+
+# Отчёты тестов
 tests/reports/coverage/
 tests/reports/junit.xml
 tests/reports/*.xml
 
-
-
-# Kerberos keytabs directory (secrets)
-kerberos/keytabs/
-
-# Agent / debug sessions (не коммитить)
 debug-*.log
 test-out.txt
 .content_root_dir_override
 
-# AD profile cache from host (per user, auto-generated)
-runtime/ad-cache/*.json
+# Вложенные чужие репозитории
+TermEdit/
+
+# Образы Docker и тяжёлые архивы (не для GitHub)
+LNSVImage/
+docker_export/
+*.tar
+backups/*.zip
+
+tests/reports/last_run.txt
+docs/mds/_pptx_extract/
+docs/mds/_pptx_src.zip
+docs/mds/_old_pptx_text.txt

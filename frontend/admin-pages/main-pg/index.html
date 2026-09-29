@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html lang="ru">
   <head>
@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/templates/css/header-footer.css" />
     <link rel="stylesheet" href="/templates/css/custom-modal.css" />
     <link rel="stylesheet" href="/main-pg/style.css" />
-    <title>LearnSite - Админ панель</title>
+    <title>LearningSite - Админ панель</title>
   </head>
   <body>
     <div class="screen">
@@ -17,60 +17,82 @@
         <main class="dashboard">
           <div class="menu-div">
             <section class="menu">
-              <h3>Админ панель</h3>
-              <ul>
-                <li><a href="/questions">Управление вопросами</a></li>
-                <li><a href="/all-lessons">Управление уроками</a></li>
-                <li><a href="/lessons-content">Управление контентом</a></li>
-                <li><a href="/users-info">Управление пользователями</a></li>
-                <li><a href="/all-categories">Управление категориями</a></li>
+              <h3>Админ-панель</h3>
+              <p class="menu-hint">Быстрый доступ к разделам управления</p>
+              <ul id="admin-menu-list">
+                <li>
+                  <a href="/all-categories-pg">
+                    <span class="menu-link-title">База знаний</span>
+                    <span class="menu-link-desc">Категории, курсы и уроки</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/questions">
+                    <span class="menu-link-title">Вопросы</span>
+                    <span class="menu-link-desc">Модерация и ответы</span>
+                    <span class="menu-badge" id="menu-badge-questions" hidden></span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/users-info">
+                    <span class="menu-link-title">Пользователи</span>
+                    <span class="menu-link-desc">Роли, прогресс, отделы</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/tests-analytics-pg">
+                    <span class="menu-link-title">Тесты</span>
+                    <span class="menu-link-desc">Глобальные тесты и аналитика</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/bin">
+                    <span class="menu-link-title">Корзина</span>
+                    <span class="menu-link-desc">Удалённый контент</span>
+                    <span class="menu-badge" id="menu-badge-bin" hidden></span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/logs">
+                    <span class="menu-link-title">Логи</span>
+                    <span class="menu-link-desc">Журнал системы</span>
+                  </a>
+                </li>
               </ul>
             </section>
           </div>
           <div class="middle-column">
             <section class="favorites">
-              <h2>Активные курсы</h2>
-              <ul>
-                <li><a href="/lessons-content">Основы программирования</a></li>
-                <li><a href="/lessons-content">Веб-разработка</a></li>
-                <li><a href="/lessons-content">Базы данных</a></li>
-                <li><a href="/lessons-content">Дизайн интерфейсов</a></li>
-                <li><a href="/lessons-content">Мобильная разработка</a></li>
-              </ul>
+              <h2>Активные курсы <span class="panel-count" id="active-courses-count"></span></h2>
+              <div class="dashboard-scroll dashboard-scroll--courses">
+                <ul id="active-courses-list">
+                  <li class="dashboard-placeholder">Загрузка…</li>
+                </ul>
+              </div>
             </section>
             <section class="news">
               <h2>Системные уведомления</h2>
-              <ul>
-                <li><a href="#">Новые регистрации пользователей</a></li>
-                <li><a href="#">Обновление системы</a></li>
-                <li><a href="#">Отчеты по активности</a></li>
-                <li><a href="#">Модерация контента</a></li>
-                <li><a href="#">Системные логи</a></li>
-              </ul>
+              <div class="dashboard-scroll dashboard-scroll--news">
+                <ul id="system-notifications-list">
+                  <li class="dashboard-placeholder">Загрузка…</li>
+                </ul>
+              </div>
             </section>
           </div>
           <div>
             <section class="popular-courses">
               <h2>Статистика курсов</h2>
-              <ul>
-                <li><a href="/lessons-content">Основы программирования - 150 студентов</a></li>
-                <li><a href="/lessons-content">Веб-разработка - 120 студентов</a></li>
-                <li><a href="/lessons-content">Дизайн интерфейсов - 95 студентов</a></li>
-                <li><a href="/lessons-content">Мобильная разработка - 80 студентов</a></li>
-                <li><a href="/lessons-content">Базы данных - 75 студентов</a></li>
-                <li><a href="/lessons-content">DevOps практики - 60 студентов</a></li>
-                <li><a href="/lessons-content">Машинное обучение - 45 студентов</a></li>
-                <li><a href="/lessons-content">Кибербезопасность - 40 студентов</a></li>
-                <li><a href="/lessons-content">Blockchain разработка - 30 студентов</a></li>
-                <li><a href="/lessons-content">Анализ данных - 25 студентов</a></li>
-                <li><a href="/lessons-content">Cloud технологии - 20 студентов</a></li>
-              </ul>
-              <a href="/all-courses" class="view-all">управление курсами</a>
+              <div class="dashboard-scroll dashboard-scroll--stats">
+                <ul id="course-stats-list">
+                  <li class="dashboard-placeholder">Загрузка…</li>
+                </ul>
+              </div>
+              <a href="/all-categories-pg" class="view-all">управление курсами</a>
             </section>
           </div>
         </main>
     </div>
     <script src="/templates/js/custom-modal.js"></script>
-    <script src="/main-pg/admin-actions.js"></script>
+    <script src="/main-pg/admin-actions.js?v=3"></script>
   </body>
 </html>

@@ -6,6 +6,7 @@ import logging
 import os
 import json
 import shutil
+from datetime import datetime, timezone
 from slugify import slugify
 from typing import Optional, Dict, Any
 from pathlib import Path
@@ -537,6 +538,28 @@ def ensure_categories_data_directory():
                 pass
 
 
+def _read_existing_config(config_path: str) -> Dict[str, Any]:
+    try:
+        if os.path.exists(config_path):
+            with open(config_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return data if isinstance(data, dict) else {}
+    except Exception:
+        pass
+    return {}
+
+
+def _preserve_creation_meta(config_path: str, config: Dict[str, Any]) -> None:
+    old = _read_existing_config(config_path)
+    for key in ("created_at", "created_by", "created_by_name", "created_by_username"):
+        if key in old and key not in config:
+            config[key] = old[key]
+
+
+def _touch_updated_at(config: Dict[str, Any]) -> None:
+    config["updated_at"] = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+
 def sync_category(
     category_id: int,
     category_title: str,
@@ -584,6 +607,8 @@ def sync_category(
         }
         if settings:
             config.update(settings)
+        _preserve_creation_meta(config_path, config)
+        _touch_updated_at(config)
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, ensure_ascii=False, indent=2)
     except Exception as e:
@@ -645,6 +670,8 @@ def sync_course(
         }
         if settings:
             config.update(settings)
+        _preserve_creation_meta(config_path, config)
+        _touch_updated_at(config)
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, ensure_ascii=False, indent=2)
     except Exception as e:
@@ -717,6 +744,8 @@ def sync_lesson(
         }
         if settings:
             config.update(settings)
+        _preserve_creation_meta(config_path, config)
+        _touch_updated_at(config)
         with open(config_path, "w", encoding="utf-8") as f:
             json.dump(config, f, ensure_ascii=False, indent=2)
     except Exception as e:

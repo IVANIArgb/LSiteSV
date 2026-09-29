@@ -289,8 +289,30 @@ def create_app(env_or_config: Optional[str | Dict[str, Any]] = None) -> Flask:
     api_bp = init_api(app)
     # H6: REST API без CSRF-токенов (Bearer/Kerberos). Cookie-сессии — SameSite=Strict в production.
     csrf.exempt(api_bp)
-    
+
+    # Административные маршруты: валидация контента, hot reload
+    from backend.routes.admin_routes import register_admin_routes
+    admin_bp = register_admin_routes(app)
+    csrf.exempt(admin_bp)
+
     register_routes(app)
+
+    # Middleware: валидация и автогенерация контента при старте сервера
+    if not app.config.get("TESTING"):
+        try:
+            from backend.content_validator import validate_and_fix_structure
+            _auto_fix = str(os.environ.get("CONTENT_AUTO_VALIDATE_ON_START", "true")).strip().lower()
+            if _auto_fix in ("true", "1", "yes", "y", "on"):
+                _vr = validate_and_fix_structure(fix=True)
+                logging.getLogger("learningsite.startup").info(
+                    "Автовалидация контента: категорий=%s, исправлено=%s",
+                    _vr.categories_checked,
+                    _vr.fixed_count,
+                )
+        except Exception as _val_exc:
+            logging.getLogger("learningsite.startup").warning(
+                "Автовалидация контента при старте пропущена: %s", _val_exc
+            )
 
     @app.after_request
     def _ensure_json_utf8_charset(response):

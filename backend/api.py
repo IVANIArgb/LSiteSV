@@ -192,6 +192,26 @@ def _require_super_admin(user_info: Dict[str, Any] | None) -> Optional[tuple]:
     return jsonify({"error": "Forbidden"}), 403
 
 
+def _can_manage_content_root(user_info: Dict[str, Any] | None) -> bool:
+    """Смена корня контента: super_admin, в TEST_MODE — любой admin-like."""
+    if not _is_authenticated_user(user_info):
+        return False
+    role = _effective_role(user_info)
+    if role == "super_admin":
+        return True
+    if current_app.config.get("TEST_MODE") and role in ("admin", "super_admin"):
+        return True
+    return False
+
+
+def _require_content_root_manager(user_info: Dict[str, Any] | None) -> Optional[tuple]:
+    if not _is_authenticated_user(user_info):
+        return jsonify({"error": "Unauthorized"}), 401
+    if _can_manage_content_root(user_info):
+        return None
+    return jsonify({"error": "Forbidden"}), 403
+
+
 def get_db_session() -> Session:
     """Получить сессию базы данных."""
     return db_manager.get_session()
@@ -305,7 +325,7 @@ def admin_content_root():
       Фактическое использование нового пути начнётся после перезапуска backend‑процесса.
     """
     user_info = getattr(g, "user_info", None)
-    deny = _require_super_admin(user_info)
+    deny = _require_content_root_manager(user_info)
     if deny:
         return deny
 
@@ -433,6 +453,150 @@ def admin_content_root():
             "контейнер можно перезапустить при проблемах."
         ),
     })
+
+
+@api_bp.route('/admin/content-root/browse', methods=['GET'])
+def admin_content_root_browse():
+    """Список подпапок на диске сервера (локальный LMS). Браузер сам путь к папке не отдаёт."""
+    import string
+
+    user_info = getattr(g, "user_info", None)
+    deny = _require_content_root_manager(user_info)
+    if deny:
+        return deny
+
+    from backend.utils.categories_data_sync import _normalize_content_root_path
+
+    raw = _normalize_content_root_path(request.args.get("path"))
+    entries: list[dict] = []
+
+    if os.name == "nt" and not raw:
+        for letter in string.ascii_uppercase:
+            drive = f"{letter}:\\"
+            if os.path.exists(drive):
+                entries.append({"name": drive, "path": drive})
+        return jsonify({
+            "current": "",
+            "parent": None,
+            "entries": entries,
+            "is_drives": True,
+        })
+
+    if not raw:
+        current = os.path.abspath(str(Path.home()))
+    else:
+        current = os.path.abspath(os.path.expanduser(raw))
+
+    if not os.path.isdir(current):
+        return jsonify({
+            "error": "Папка не найдена или недоступна",
+            "current": current,
+            "parent": None,
+            "entries": [],
+            "is_drives": False,
+        }), 400
+
+    parent: Optional[str]
+    if os.name == "nt":
+        _drive, tail = os.path.splitdrive(os.path.abspath(current))
+        tail_norm = (tail or "").replace("/", "\\").strip("\\")
+        if not tail_norm:
+            parent = ""
+        else:
+            parent = os.path.abspath(os.path.dirname(os.path.abspath(current).rstrip("\\")))
+    else:
+        current_abs = os.path.abspath(current)
+        if current_abs == os.path.abspath(os.sep):
+            parent = None
+        else:
+            parent = os.path.dirname(current_abs)
+
+    scan_error = None
+    try:
+        with os.scandir(current) as it:
+            for item in it:
+                try:
+                    if item.is_dir(follow_symlinks=False):
+                        entries.append({
+                            "name": item.name,
+                            "path": os.path.abspath(item.path),
+                        })
+                except OSError:
+                    continue
+    except OSError as exc:
+        scan_error = str(exc)
+
+    entries.sort(key=lambda row: str(row.get("name") or "").lower())
+    return jsonify({
+        "current": os.path.abspath(current),
+        "parent": parent,
+        "entries": entries[:500],
+        "is_drives": False,
+        "error": scan_error,
+    })
+
+
+@api_bp.route('/admin/dashboard', methods=['GET'])
+def admin_dashboard():
+    """Данные для главной админ-панели: курсы, уведомления, статистика."""
+    deny = _require_admin(g.get("user_info"))
+    if deny:
+        return deny
+    session = get_db_session()
+    try:
+        from backend.utils.admin_dashboard import build_admin_dashboard
+
+        payload = build_admin_dashboard(session)
+        return jsonify(payload)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        session.close()
+
+
+@api_bp.route('/admin/logs', methods=['GET'])
+def admin_logs():
+    """Просмотр логов приложения. Только admin / super_admin."""
+    user_info = getattr(g, "user_info", None)
+    deny = _require_admin(user_info)
+    if deny:
+        return deny
+
+    from backend.utils.log_reader import query_logs
+
+    log_dir = Path(current_app.config.get("LOG_DIR") or (Path(current_app.config["PROJECT_ROOT"]) / "backend" / "logs"))
+    filename = (request.args.get("file") or "app.log").strip()
+    level = (request.args.get("level") or "").strip() or None
+    category = (request.args.get("category") or "").strip() or None
+    levels = request.args.getlist("levels") or request.args.getlist("level")
+    categories = request.args.getlist("categories") or request.args.getlist("category")
+    tags = request.args.getlist("tags") or request.args.getlist("tag")
+    search = (request.args.get("search") or "").strip() or None
+    sort = (request.args.get("sort") or "time_desc").strip()
+    try:
+        limit = int(request.args.get("limit") or 500)
+    except (TypeError, ValueError):
+        limit = 500
+    try:
+        offset = int(request.args.get("offset") or 0)
+    except (TypeError, ValueError):
+        offset = 0
+
+    payload = query_logs(
+        log_dir,
+        filename=filename,
+        level=level,
+        category=category,
+        levels=levels,
+        categories=categories,
+        tags=tags,
+        search=search,
+        sort=sort,
+        limit=limit,
+        offset=offset,
+    )
+    payload["log_dir"] = str(log_dir)
+    return jsonify(payload)
 
 
 @api_bp.route('/admin/backups', methods=['GET', 'POST'])
@@ -1151,6 +1315,15 @@ def create_course():
         
         session.add(course)
         session.flush()  # Получить ID курса
+
+        creator_meta = {}
+        try:
+            creator_user = _get_current_db_user(session)
+            if creator_user:
+                from backend.utils.material_meta import creator_fields_for_config
+                creator_meta = creator_fields_for_config(creator_user)
+        except Exception:
+            creator_meta = {}
         
         # Синхронизация файловой структуры
         path_identifier = sync_course(
@@ -1163,6 +1336,7 @@ def create_course():
                 "sequential_progression": course.sequential_progression,
                 "total_lessons": course.total_lessons,
                 "is_active": course.is_active,
+                **creator_meta,
             },
         )
         course.path_identifier = path_identifier
@@ -1974,6 +2148,9 @@ def get_current_user_info():
         view_mode = (request.cookies.get('ls_view_mode') or '').strip().lower()
         if current_role in ('admin', 'super_admin') and view_mode == 'user':
             effective_role = 'user'
+        can_manage_content_root = bool(
+            _can_manage_content_root(current_user_info) and effective_role != 'user'
+        )
         
         if not username:
             return jsonify({'error': 'Пользователь не аутентифицирован'}), 401
@@ -2000,6 +2177,7 @@ def get_current_user_info():
                 'username': username_norm,
                 'role': current_role,
                 'effective_role': effective_role,
+                'can_manage_content_root': can_manage_content_root,
                 'in_database': False,
                 'message': 'Пользователь не найден в базе данных'
             })
@@ -2010,6 +2188,7 @@ def get_current_user_info():
         # Если по каким‑то причинам в БД роль пустая, используем роль из контекста.
         user_data['role'] = user_data.get('role') or current_role
         user_data['effective_role'] = effective_role
+        user_data['can_manage_content_root'] = can_manage_content_root
         
         # Добавляем информацию о курсах (теперь без N+1 запросов)
         course_progress = []
@@ -2027,6 +2206,25 @@ def get_current_user_info():
         
         return jsonify(user_data)
     
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        session.close()
+
+
+# ----------------------- Material info -----------------------
+
+@api_bp.route('/materials/<material_type>/<int:material_id>/info', methods=['GET'])
+def get_material_info_endpoint(material_type: str, material_id: int):
+    """Метаданные материала: описание, дата создания, автор."""
+    from backend.utils.material_meta import get_material_info
+
+    session = get_db_session()
+    try:
+        info = get_material_info(session, material_type, material_id)
+        if not info:
+            return jsonify({'error': 'Материал не найден'}), 404
+        return jsonify(info)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     finally:
@@ -2139,6 +2337,15 @@ def create_category():
         
         session.add(category)
         session.flush()  # Получить ID категории
+
+        creator_meta = {}
+        try:
+            creator_user = _get_current_db_user(session)
+            if creator_user:
+                from backend.utils.material_meta import creator_fields_for_config
+                creator_meta = creator_fields_for_config(creator_user)
+        except Exception:
+            creator_meta = {}
         
         # Синхронизация файловой структуры
         path_identifier = sync_category(
@@ -2149,6 +2356,7 @@ def create_category():
                 "order": category.order,
                 "sequential_progression": category.sequential_progression,
                 "is_active": category.is_active,
+                **creator_meta,
             },
         )
         category.path_identifier = path_identifier
@@ -2677,6 +2885,22 @@ def create_lesson():
         
         session.add(lesson)
         session.flush()  # Получить ID урока
+
+        creator_meta = {}
+        try:
+            creator_user = _get_current_db_user(session)
+            if creator_user:
+                from backend.utils.material_meta import creator_fields_for_config
+                creator_meta = creator_fields_for_config(creator_user)
+        except Exception:
+            creator_meta = {}
+
+        lesson_settings = {
+            "description": lesson.description,
+            "lesson_number": lesson.lesson_number,
+            "is_active": lesson.is_active,
+            **creator_meta,
+        }
         
         # Синхронизация файловой структуры categories-data
         path_identifier = sync_lesson(
@@ -2685,10 +2909,7 @@ def create_lesson():
             lesson.id,
             lesson.title,
             None,
-            settings={
-                "lesson_number": lesson.lesson_number,
-                "is_active": lesson.is_active,
-            },
+            settings=lesson_settings,
         )
         lesson.path_identifier = path_identifier
 

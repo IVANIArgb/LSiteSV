@@ -73,11 +73,21 @@
     }
 
     // Показать модальное окно
-    // options: { requireButtonsOnly?: boolean, messageClass?: string } — без закрытия по фону/Escape; доп. классы к тексту
+    // options: { requireButtonsOnly?, messageClass?, modalClass? }
     function showCustomModal(title, message, buttons, options) {
         options = options || {};
         if (!customModalOverlay) {
             initCustomModal();
+        }
+
+        if (customModal) {
+            customModal.className = "custom-modal";
+            if (options.modalClass) {
+                String(options.modalClass)
+                    .split(/\s+/)
+                    .filter(Boolean)
+                    .forEach((c) => customModal.classList.add(c));
+            }
         }
 
         // Устанавливаем заголовок и сообщение
@@ -87,7 +97,7 @@
 
         if (titleEl) titleEl.textContent = title || "заголовок";
         if (messageEl) {
-            messageEl.textContent = message || "текст";
+            messageEl.textContent = message != null && message !== "" ? message : "";
             messageEl.className = "custom-modal-message";
             if (options.messageClass) {
                 String(options.messageClass)
@@ -129,9 +139,13 @@
             customModalOverlay.classList.remove("custom-modal-overlay--blocking");
             document.body.style.overflow = ""; // Разблокируем скролл
         }
+        if (customModal) {
+            customModal.className = "custom-modal";
+        }
         const messageEl = document.getElementById("custom-modal-message");
         if (messageEl) {
             messageEl.className = "custom-modal-message";
+            messageEl.textContent = "";
         }
     }
 

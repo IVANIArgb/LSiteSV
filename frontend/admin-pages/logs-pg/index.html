@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8" />
+    <title>Логи — LearningSite</title>
+    <link rel="stylesheet" href="/users-info-pg/globals.css" />
+    <link rel="stylesheet" href="/users-info-pg/styleguide.css" />
+    <link rel="stylesheet" href="/templates/css/header-footer.css" />
+    <link rel="stylesheet" href="/templates/css/custom-modal.css" />
+    <link rel="stylesheet" href="/users-info-pg/style.css" />
+    <link rel="stylesheet" href="/logs-pg/style.css" />
+  </head>
+  <body>
+    <div class="screen">
+      <main class="dashboard logs-dashboard">
+        <div class="breadcrumbs">
+          <a href="/main-pg">Главная</a> &gt; <span>Логи</span>
+        </div>
+        <h1 class="page-title">Логи системы</h1>
+        <p class="logs-subtitle" id="logs-status" aria-live="polite">Загрузка…</p>
+
+        <section class="logs-filters-panel" aria-label="Фильтры логов">
+          <div class="logs-filters-row">
+            <select id="logs-file" class="filter-select" aria-label="Файл логов"></select>
+            <label class="logs-sort-label">
+              Сортировка:
+              <select id="logs-sort" class="filter-select" aria-label="Сортировка по времени">
+                <option value="time_desc" selected>сначала новые</option>
+                <option value="time_asc">сначала старые</option>
+              </select>
+            </label>
+            <input
+              type="search"
+              id="logs-search"
+              class="search-input logs-search-input"
+              placeholder="Поиск по тексту…"
+              autocomplete="off"
+            />
+            <button type="button" id="logs-refresh" class="refresh-button">Обновить</button>
+            <label class="logs-auto-refresh">
+              <input type="checkbox" id="logs-auto-refresh" />
+              авто 30 с
+            </label>
+          </div>
+
+          <fieldset class="logs-tags-fieldset">
+            <legend>Тип записи</legend>
+            <div class="logs-checkbox-list" id="logs-tags">
+              <span class="logs-filter-empty">загрузка…</span>
+            </div>
+            <button type="button" id="logs-clear-filters" class="logs-clear-btn">Сбросить</button>
+          </fieldset>
+        </section>
+
+        <section class="logs-console-section" aria-label="Логи">
+          <div class="logs-console-header">
+            <span id="logs-count">—</span>
+            <div class="logs-pagination">
+              <button type="button" id="logs-prev" class="logs-page-btn" disabled>Назад</button>
+              <span id="logs-page-info">—</span>
+              <button type="button" id="logs-next" class="logs-page-btn" disabled>Вперёд</button>
+            </div>
+          </div>
+          <pre class="logs-console" id="logs-console" role="log" aria-live="polite"></pre>
+        </section>
+      </main>
+    </div>
+    <script src="/templates/js/custom-modal.js"></script>
+    <script src="/logs-pg/logs-viewer.js"></script>
+  </body>
+</html>

@@ -103,6 +103,7 @@ class BaseConfig:
         "bin",
         "bin-pg",  # директория корзины (CSS/JS для /bin)
         "terminal-pg",
+        "logs-pg",
     ]
     
     # Frontend directories
@@ -124,7 +125,7 @@ class BaseConfig:
     LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
     
     # Kerberos Authentication settings (ONLY)
-    KERBEROS_AUTH_ENABLED = os.environ.get("KERBEROS_AUTH_ENABLED", "true").lower() == "true"
+    KERBEROS_AUTH_ENABLED = os.environ.get("KERBEROS_AUTH_ENABLED", "false").lower() == "true"
     KERBEROS_SERVICE_NAME = os.environ.get("KERBEROS_SERVICE_NAME", "HTTP")
     KERBEROS_REALM = os.environ.get("KERBEROS_REALM", "EXAMPLE.COM")
     # Путь к keytab файлу (по умолчанию для Windows, для Linux установите через переменную окружения)

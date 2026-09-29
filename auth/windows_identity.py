@@ -39,7 +39,7 @@ def current_logon_name() -> str:
 
 
 def sam_account_name(full: Optional[str] = None) -> Optional[str]:
-    """Короткий логин (ManakovIV, Пользователь, …)."""
+    """Короткий логин (DOMAIN\\user → user)."""
     name = (full if full is not None else current_logon_name()).strip()
     if not name:
         return None

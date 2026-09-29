@@ -56,21 +56,68 @@ html {
 
 .menu ul {
   list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+.menu h3 {
+  margin: 0 0 0.35rem;
+  color: #fff;
+  font-size: 1.15rem;
+}
+.menu-hint {
+  margin: 0 0 1rem;
+  padding: 0 0.5rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.82rem;
+  line-height: 1.35;
+  text-align: center;
 }
 .menu li {
-  margin-bottom: 12px
+  margin-bottom: 10px;
+  position: relative;
 }
 .menu a {
   display: block;
   width: 260px;
-  padding: 8px;
+  padding: 10px 12px;
   background-color: #5b889e;
   color: #ffffff;
   text-decoration: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 1rem;
-  transition: background 0.2s, color 0.3s; width: 0.4s; height: 0.4s;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+  box-sizing: border-box;
+}
+.menu-link-title {
+  display: block;
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.menu-link-desc {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.82);
+}
+.menu-badge {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: #e57373;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.35rem;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .menu a:hover {
@@ -115,11 +162,139 @@ html {
   font-weight: 600;
 }
 
+.folder-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.folder-picker {
+  width: min(640px, 100%);
+  max-height: min(80vh, 720px);
+  overflow: auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.1rem 1.2rem 1.2rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.folder-picker h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.15rem;
+}
+
+.folder-picker-hint {
+  margin: 0 0 0.75rem;
+  color: #4d4d4d;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.folder-picker-path {
+  font-size: 0.85rem;
+  word-break: break-all;
+  background: #f3f6f8;
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  margin-bottom: 0.65rem;
+}
+
+.folder-picker-toolbar,
+.folder-picker-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.65rem;
+}
+
+.folder-picker-list {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid #d8e2e8;
+  border-radius: 8px;
+}
+
+.folder-picker-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  padding: 0.55rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.folder-picker-item:hover {
+  background: #e8f2f7;
+}
+
+.folder-picker-empty {
+  padding: 0.7rem 0.75rem;
+  color: #6b6b6b;
+}
+
+.folder-picker-manual {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.folder-picker-manual input {
+  padding: 0.45rem 0.55rem;
+  border: 1px solid #c5d3dc;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.folder-picker-btn {
+  border: none;
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  background: #5b889e;
+  color: #fff;
+  font-weight: 600;
+}
+
+.folder-picker-btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.folder-picker-btn--ghost {
+  background: #d9e3e9;
+  color: #2c2c2c;
+}
+
+.folder-picker-btn--primary {
+  background: #3d6d84;
+}
+
+.folder-picker-status {
+  margin: 0;
+  min-height: 1.2em;
+  color: #8a3b3b;
+  font-size: 0.85rem;
+}
+
 .middle-column {
   display: flex;
   flex-direction: column;
   height: 100%;
   gap: 1rem;
+  min-height: 0;
 }
 
 .favorites,
@@ -130,6 +305,8 @@ html {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .popular-courses {
@@ -139,6 +316,55 @@ html {
   height: 100%;
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.panel-count {
+  font-weight: 500;
+  font-size: 0.85em;
+  opacity: 0.9;
+}
+
+.dashboard-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-right: -0.25rem;
+  padding-right: 0.35rem;
+  scrollbar-width: thin;
+  scrollbar-color: #5b889e #c8e3f0;
+}
+
+.dashboard-scroll--courses {
+  max-height: min(42vh, 360px);
+}
+
+.dashboard-scroll--news {
+  max-height: min(34vh, 280px);
+}
+
+.dashboard-scroll--stats {
+  max-height: min(58vh, 520px);
+}
+
+.dashboard-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dashboard-scroll::-webkit-scrollbar-track {
+  background: #c8e3f0;
+  border-radius: 8px;
+}
+
+.dashboard-scroll::-webkit-scrollbar-thumb {
+  background: #5b889e;
+  border-radius: 8px;
+}
+
+.dashboard-scroll::-webkit-scrollbar-thumb:hover {
+  background: #4a7385;
 }
 
 
@@ -187,7 +413,7 @@ h2 {
 .news ul {
   list-style-type: none;
   padding: 0;
-  flex: 1;
+  margin: 0;
 }
 
 .popular-courses li,
@@ -197,11 +423,90 @@ h2 {
   border-bottom: 1px solid #00000059;
 }
 
+.dashboard-course-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  line-height: 1.35;
+}
+
+.dashboard-course-link:hover {
+  color: #546b97;
+}
+
+.dashboard-course-title {
+  display: block;
+  font-weight: 600;
+}
+
+.dashboard-course-meta {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.82rem;
+  color: #5b889e;
+}
+
+.dashboard-notify {
+  padding: 0.65rem 0.5rem;
+}
+
+.dashboard-notify a {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  line-height: 1.35;
+}
+
+.dashboard-notify__label {
+  display: inline-block;
+  margin-bottom: 0.25rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dashboard-notify--alert .dashboard-notify__label {
+  background: #ffcdd2;
+  color: #b71c1c;
+}
+
+.dashboard-notify--news .dashboard-notify__label {
+  background: #c8e6c9;
+  color: #1b5e20;
+}
+
+.dashboard-notify--system .dashboard-notify__label {
+  background: #e0e0e0;
+  color: #424242;
+}
+
+.dashboard-notify__title {
+  display: block;
+  font-weight: 600;
+  color: #2c4a57;
+}
+
+.dashboard-notify__subtitle {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.82rem;
+  color: #5b889e;
+}
+
+.dashboard-notify__time {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #7a96a3;
+}
+
 .popular-courses a,
 .favorites a,
 .news a {
-  transition: background 0.2s, color 0.3s; width: 0.4s; height: 0.4s;
-  padding-right: 10rem;
+  transition: color 0.2s;
 }
 
 .popular-courses a:hover,
@@ -216,6 +521,19 @@ h2 {
 .news a:active {
   color: rgb(165, 205, 223);
   font-weight: 600;
+}
+
+.dashboard-placeholder,
+.dashboard-empty {
+  color: #5b889e;
+  font-style: italic;
+  padding: 0.75rem 0.5rem;
+}
+
+.dashboard-meta {
+  color: #5b889e;
+  font-size: 0.9em;
+  font-weight: 400;
 }
 
 /* Footer styles moved to header-footer.css */

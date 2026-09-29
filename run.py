@@ -37,7 +37,7 @@ if os.name != "nt":
         os.environ["CONTENT_ROOT_DIR"] = "/app/categories-data"
 
 if os.name != "nt" and _is_docker():
-    _cr = os.environ.get("CONTENT_ROOT_DIR", "").strip()
+    _cr = os.environ.get("CONTENT_ROOT_DIR", "").strip() 
     if _cr and not os.path.isdir(_cr):
         _fb = "/app/categories-data"
         os.makedirs(_fb, exist_ok=True)

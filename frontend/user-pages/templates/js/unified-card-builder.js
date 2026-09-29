@@ -85,6 +85,82 @@ function createActionButton(icon, onClick, title, className = '', disabled = fal
     return `<button class="btn-action-icon ${className}" ${disabledAttr} onclick="${onClick}" title="${escapeHtml(title)}">${icon}</button>`;
 }
 
+function createInfoButton(materialType, materialId) {
+    return `<button type="button" class="btn-card-info" onclick="showMaterialInfo('${materialType}', ${materialId}, event)" title="Информация о материале" aria-label="Информация о материале"><span class="btn-card-info__glyph">i</span></button>`;
+}
+
+function formatMaterialDate(value) {
+    if (!value) return '—';
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return String(value);
+    return d.toLocaleString('ru-RU', { dateStyle: 'long', timeStyle: 'short' });
+}
+
+function buildMaterialInfoRow(label, value, extraClass) {
+    const display = value || '—';
+    const isEmpty = !value || value === '—';
+    let valueClass = 'material-info-value';
+    if (isEmpty) valueClass += ' material-info-value--empty';
+    if (extraClass) valueClass += ' ' + extraClass;
+    return (
+        '<div class="material-info-row">' +
+        '<span class="material-info-label">' + escapeHtml(label) + '</span>' +
+        '<span class="' + valueClass + '">' + escapeHtml(display) + '</span>' +
+        '</div>'
+    );
+}
+
+async function showMaterialInfo(materialType, materialId, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    try {
+        const resp = await fetch(`/api/materials/${materialType}/${materialId}/info`, { credentials: 'include' });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) {
+            const msg = data.error || 'Не удалось загрузить информацию о материале';
+            if (typeof customAlert === 'function') await customAlert(msg, 'Ошибка');
+            else alert(msg);
+            return;
+        }
+        const creator = data.created_by || data.created_by_username || '';
+        const description = (data.description || '').trim();
+        let html = '<div class="material-info-modal">';
+        html += buildMaterialInfoRow('Тип', data.type_label || '');
+        html += buildMaterialInfoRow('Название', data.title || '', 'material-info-value--title');
+        html += buildMaterialInfoRow('Описание', description || '—');
+        html += buildMaterialInfoRow('Создано', formatMaterialDate(data.created_at));
+        html += buildMaterialInfoRow('Создатель', creator || '—');
+        if (data.updated_at) {
+            html += buildMaterialInfoRow('Обновлено', formatMaterialDate(data.updated_at));
+        }
+        html += '</div>';
+
+        if (typeof showCustomModal === 'function') {
+            showCustomModal('Информация о материале', '', [{
+                text: 'Закрыть',
+                className: 'custom-modal-btn-secondary',
+                onclick: () => {
+                    if (typeof closeCustomModal === 'function') closeCustomModal();
+                },
+            }], {
+                modalClass: 'custom-modal--material-info',
+                messageClass: 'material-info-body',
+            });
+            const messageEl = document.getElementById('custom-modal-message');
+            if (messageEl) {
+                messageEl.innerHTML = html;
+            }
+        } else {
+            alert((data.title || '') + '\n' + (data.description || ''));
+        }
+    } catch (e) {
+        if (typeof customAlert === 'function') await customAlert('Ошибка сети при загрузке информации.', 'Ошибка');
+        else alert('Ошибка сети');
+    }
+}
+
 /**
  * Создать панель статуса
  */
@@ -158,6 +234,7 @@ function createCategoryCardFromModule(category, options = {}) {
     
     card.innerHTML = `
         <div class="card-content">
+            ${createInfoButton('category', category.id)}
             <div class="card-header">
                 <h3 class="card-title">${escapeHtml(category.title)}</h3>
             </div>
@@ -238,6 +315,7 @@ function createCourseCardFromModule(course, options = {}) {
     
     card.innerHTML = `
         <div class="card-content">
+            ${createInfoButton('course', course.id)}
             <div class="card-header">
                 <h3 class="card-title">
                     ${escapeHtml(course.title)}
@@ -326,6 +404,7 @@ function createLessonCardFromModule(lesson, options = {}) {
     
     card.innerHTML = `
         <div class="card-content">
+            ${createInfoButton('lesson', lesson.id)}
             <div class="card-header">
                 <h3 class="card-title">${escapeHtml(lesson.title)}</h3>
             </div>
@@ -415,6 +494,7 @@ function createDeletedObjectCardFromModule(obj, options = {}) {
 // Делаем функции доступными глобально
 window.handleCourseOpenClick = handleCourseOpenClick;
 window.handleLessonOpenClick = handleLessonOpenClick;
+window.showMaterialInfo = showMaterialInfo;
 window.createCategoryCardFromModule = createCategoryCardFromModule;
 window.createCourseCardFromModule = createCourseCardFromModule;
 window.createLessonCardFromModule = createLessonCardFromModule;
